@@ -1,0 +1,5 @@
+﻿RewriteEngine On
+
+RewriteBase /
+
+RewriteRule ^.*$ src/webroot/index.php
