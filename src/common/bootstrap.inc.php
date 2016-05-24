@@ -44,8 +44,10 @@ date_default_timezone_set( 'Etc/GMT' . config\GlobalConfig::TIME_ZONE * -1 );
 //错误显示
 if ( config\GlobalConfig::DEBUG ) {
     error_reporting( E_ALL );
+    ini_set( 'display_errors', 1 );
 } else {
     error_reporting( 0 );
+    ini_set( 'display_errors', 0 );
     //错误句柄
     set_error_handler( 'catchSysError', E_ALL ^ E_NOTICE );
     //异常句柄
