@@ -89,4 +89,20 @@ class Ip {
         return false;
     }
 
+    /**
+     * 获取本机Ip
+     * @param  boolean $isInt 是否整型
+     * @return string|int
+     */
+    public static function getLocalIp( $isInt = true ) {
+        $ip = '';
+        if ( !empty($_SERVER['SERVER_ADDR']) ) {
+            $ip = $_SERVER['SERVER_ADDR'];
+        } else if ( !empty($_SERVER['SERVER_NAME']) ) {
+            $ip = gethostbyname( $_SERVER['SERVER_NAME'] );
+        }
+
+        return !empty($ip) and $isInt ? ip2long( $ip ) : $ip;
+    }
+
 }

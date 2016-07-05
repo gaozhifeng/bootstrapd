@@ -48,20 +48,20 @@ class File {
      * @param  string $mode 写入内容
      * @return boolean
      */
-    public static function writeFile( $name, $data, $mode = 'w' ) {
+    public static function writeFile( $name, $data, $mode = 'a' ) {
 
-        /* 如果文件存在，但不可写，则返回失败
-           文件不存在则会自动创建，所以不进行验证 */
+        // 如果文件存在，但不可写，则返回失败
+        // 文件不存在则会自动创建，所以不进行验证
         if ( is_file($name) && !is_writeable($name) ) {
             return false;
         }
 
         if ( function_exists('file_put_contents') ) {
-            return file_put_contents( $name, $data, FILE_APPEND );
+            return file_put_contents( $name, $data, FILE_APPEND | LOCK_EX );
         } else {
             $fp = fopen( $name, $mode );
             if ( flock( $fp, LOCK_EX ) ) {
-                $fl = fputs($fp, $name, $data);
+                $fl = fwrite( $fp, $name, $data );
                 flock( $fp, LOCK_UN );
             }
             fclose( $fp );
@@ -103,7 +103,7 @@ class File {
      */
     public static function formatBytes( $size ) {
         $unit = array( ' B', ' KB', ' MB', ' GB', ' TB' );
-        for ( $u = 0; $size >= 1024 && $u < 4; $u++ ) {
+        for ( $u = 0; $size >= 1024 && $u < 4; $u ++ ) {
             $size /= 1024;
         }
         return round( $size, 2 ) . $unit[$u];
@@ -115,7 +115,7 @@ class File {
      * @return string
      */
     public static function getFileMime( $sourcePath ) {
-        $fi = new finfo( FILEINFO_MIME_TYPE );
+        $fi = new \finfo( FILEINFO_MIME_TYPE );
         return $fi->file( $sourcePath );
     }
 
