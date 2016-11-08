@@ -1,5 +1,1 @@
-﻿RewriteEngine On
-
-RewriteBase /
-
-RewriteRule ^.*$ src/webroot/index.php
+﻿rewrite ^/ /src/webroot/index.php?$query_string  last;

@@ -49,7 +49,9 @@ class Router {
             $match = explode( '/', $uri );
             $args  = array( 'all', 'module', 'resource', 'query' );
             foreach ( $match as $key => $value ) {
-                $$args[$key] = preg_replace( '/\?(?<=\?).*/', '', $value );
+                $argsTmp  = $args[$key];
+                $$argsTmp = preg_replace( '/\?(?<=\?).*/', '', $value );
+                /// PHP7 不能以 $$args[$key] 赋值变量
             }
         }
 

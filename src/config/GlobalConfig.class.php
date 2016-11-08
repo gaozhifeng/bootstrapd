@@ -28,6 +28,16 @@ class GlobalConfig {
     const VERSION = '0.9';
 
     /**
+     * 是否启用XHprof
+     */
+    const XHPROF = true;
+
+    /**
+     * XHprof采样率
+     */
+    const XHPROF_RATIO = 10;
+
+    /**
      * 数据库地址
      */
     const DB_HOST = 'localhost';
@@ -81,12 +91,12 @@ class GlobalConfig {
      * @var array
      */
     public static $REDIS_SERVER_DEFAULT = [
-        'host'     => '10.3.2.9',
+        'host'     => '',
         'port'     => 6379,
         'weight'   => 1,
         'database' => 0,
         'password' => '',
-        'timeout'  => 3,
+        'timeout'  => 1,
     ];
 
     /**

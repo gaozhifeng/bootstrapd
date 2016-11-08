@@ -11,7 +11,7 @@
 header( 'Content-Type:text/html; charset=utf-8' );
 
 
-//定义目录
+// 定义目录
 define( 'BOOTSTRAPD_COMMON', preg_replace('/[\/\\\\]{1,}/', '/', __DIR__) );
 define( 'BOOTSTRAPD_ROOT', dirname(BOOTSTRAPD_COMMON) );
 define( 'BOOTSTRAPD_APP',  BOOTSTRAPD_ROOT . '/app' );
@@ -22,44 +22,61 @@ define( 'BOOTSTRAPD_SRV',  BOOTSTRAPD_ROOT . '/server' );
 define( 'BOOTSTRAPD_STA',  BOOTSTRAPD_ROOT . '/static' );
 
 
-//自动加载
+// 自动加载
 require_once BOOTSTRAPD_COMMON . '/Loader.class.php';
 require_once BOOTSTRAPD_COMMON . '/Autoload.class.php';
 
 
-//命名空间
+// 命名空间
 use bootstrapd\common;
 use bootstrapd\config;
 use bootstrapd\library\util;
 
 
-//开始运行
+// 开始运行
 util\datetime\Timer::start( 'system' );
 
 
-//默认时区
+// XHPROF
+if ( config\GlobalConfig::XHPROF and extension_loaded('xhprof') ) {
+    if ( mt_rand(0, config\GlobalConfig::XHPROF_RATIO) == 1 ) {
+        xhprof_enable( XHPROF_FLAGS_NO_BUILTINS );
+        register_shutdown_function( 'xhprofSave' );
+    }
+}
+
+
+// 默认时区
 date_default_timezone_set( 'Etc/GMT' . config\GlobalConfig::TIME_ZONE * -1 );
 
 
-//错误显示
+// 错误显示
 if ( config\GlobalConfig::DEBUG ) {
     error_reporting( E_ALL );
     ini_set( 'display_errors', 1 );
 } else {
     error_reporting( 0 );
     ini_set( 'display_errors', 0 );
-    //错误句柄
+    // 错误句柄
     set_error_handler( 'catchSysError', E_ALL ^ E_NOTICE );
-    //异常句柄
+    // 异常句柄
     set_exception_handler( 'catchSysException' );
-    //500错误处理
+    // 500错误处理
     register_shutdown_function( 'getSysShutdown' );
 }
 
 
-//变量解义
+// 变量解义
 util\http\Http::stripGpc();
 
+
+/**
+ * xhprof保存
+ * @return void
+ */
+function xhprofSave() {
+    file_put_contents( (ini_get('xhprof.output_dir') ? : '/tmp') . '/' . uniqid() . '.xhprof.xhprof', serialize(xhprof_disable()) );
+}
 
 /**
  * 系统错误
@@ -70,7 +87,6 @@ function getSysShutdown() {
     if ( $error && in_array($error['type'], array(E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR)) ) {
         catchSysError( $error['type'], $error['message'], $error['file'], $error['line'] );
     }
-    exit;
 }
 
 /**
